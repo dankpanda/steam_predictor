@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_csv('dataset/merged.csv')
+df = pd.read_csv('dataset/merged3.csv')
 
 
 
@@ -77,7 +77,18 @@ for i in df.index:
                 break
         res = res[::-1]
         df.at[i,'price'] = res
+
+df['popu_tags'] = df['popu_tags'].str.replace('+', '')
+df.drop('requirements',axis=1,inplace=True)
+df.drop('desc',axis=1,inplace=True)
+df.drop('full_desc',axis=1,inplace=True)
 '''
 
+categ_list = {'Online PVP','LAN PVP','Online Co-Op','LAN Co-Op','Cross-Platform','Multiplayer','Steam Workshop','In-App Purchases','Stats','MMO','Single-player','Steam Cloud','Captions available','Cross-Platform Multiplayer','Steam VR','Collectibles','Steam Leaderboards','Includes level editor','Downloadble Content'}
+for i in df.index:
+    categ = str(df.at[i,'categories'])
+    
 
-df.to_csv('dataset/merged2.csv',index=False)
+
+
+df.to_csv('dataset/merged3.csv',index=False)

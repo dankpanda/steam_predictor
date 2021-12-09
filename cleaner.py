@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-
+from langdetect import detect
 # #Initial merge
 # merged_df = pd.DataFrame()
 # csv_list = os.listdir('dataset')
@@ -70,7 +70,39 @@ import os
 # df['voted_up'] = df['voted_up'].astype(int)
 # df.to_csv('merged_df.csv',index=False)
 
-df = pd.read_csv('merged_df.csv')
-df['review'] = df['review'].astype("string")
+# # Converting all text to lower case
+# df = pd.read_csv('dataset/merged_df.csv')
+# for i in df.index:
+#     cur = str(df.at[i,'review'])
+#     cur = cur.lower()
+#     df.at[i,'review'] = cur
+
+# df.to_csv('merged_df.csv',index=False)
+
+# # Removing non ascii characters
+# df = pd.read_csv('dataset/merged_df.csv')
+# for i in df.index:
+#     cur = str(df.at[i,'review'])
+#     if(cur.isascii() == False):
+#         for j in cur:
+#             if(j.isascii() == False):
+#                 cur = cur.replace(j, '')
+#         df.at[i,'review'] = cur
+# df.to_csv('merged_df.csv',index=False)
+
+# Removing non english rows
+df = pd.read_csv('dataset/merged_df.csv')
+drop_index=[]
+for i in df.index:
+    try:
+        language = detect(str(df.at[i,'review']))
+    except:
+        print(df.iloc[[i]].review)
+        language = '?'
+    if language != 'en':
+        drop_index.append(i)
+
+print(df.shape)
+df.drop(drop_index,inplace=True)
+print(df.shape)
 df.to_csv('merged_df.csv',index=False)
-print(df.dtypes)

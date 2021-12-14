@@ -8,12 +8,12 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 import matplotlib.pyplot as plt
 
-df = pd.read_csv('dataset/merged_df.csv')
-
+df = pd.read_csv('dataset/merged_df2.csv')
+df = df[df['review'].notna()]
 y = df.pop('voted_up')
 x = df['review']
 
-x_train, x_test, y_train,y_test = train_test_split(x,y,test_size=0.3,random_state=69420)
+x_train, x_test, y_train,y_test = train_test_split(x,y,test_size=0.1,random_state=558)
 
 nb = Pipeline([('vect', CountVectorizer()),
                ('tfidf', TfidfTransformer()),
@@ -22,6 +22,6 @@ nb = Pipeline([('vect', CountVectorizer()),
 nb.fit(x_train, y_train)
 
 from sklearn.metrics import classification_report
-y_pred = nb.predict(x_test)
 
+y_pred = nb.predict(x_test)
 print('accuracy %s' % accuracy_score(y_pred, y_test))

@@ -8,9 +8,9 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 import matplotlib.pyplot as plt
 
-df = pd.read_csv('dataset/merged_df2.csv')
+df = pd.read_csv('merged_df.csv')
 df = df[df['review'].notna()]
-y = df.pop('voted_up')
+y = df.pop('voted_up').astype('int')
 x = df['review']
 
 x_train, x_test, y_train,y_test = train_test_split(x,y,test_size=0.1,random_state=558)

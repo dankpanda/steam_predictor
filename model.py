@@ -13,6 +13,7 @@ df = df[df['review'].notna()]
 embedding_dim = 64
 max_tokens = 30000
 output_length = 300
+batch_size = 16
 epochs = 10
 # 4 epoch
     
@@ -43,16 +44,18 @@ vectorize_layer.adapt(x_train)
 def create_model():
     model = tf.keras.Sequential()
     model.add(vectorize_layer)
-    model.add(tf.keras.layers.Embedding(input_dim = max_tokens,output_dim = embedding_dim))
-    model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(embedding_dim)))
-    model.add(tf.keras.layers.Dense(embedding_dim))
+    model.add(tf.keras.layers.Embedding(input_dim = max_tokens+1,output_dim = embedding_dim))
+    model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(embedding_dim,return_sequences=True)))
+    model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(int(embedding_dim/2))))
+    model.add(tf.keras.layers.Dense(embedding_dim, activation='relu'))
+    model.add(tf.keras.layers.Dense(embedding_dim/2, activation='relu'))
     model.add(tf.keras.layers.Dense(1))
-    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True), optimizer='adam', metrics=['accuracy'])
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True), optimizer=tf.keras.optimizers.Adam(0.00001), metrics=['accuracy'])
 
     return model 
 
 model = create_model()
-history = model.fit(x_train, y_train, epochs=epochs, validation_data=(x_val,y_val),batch_size=16)
+history = model.fit(x_train, y_train, epochs=epochs, validation_data=(x_val,y_val),batch_size=batch_size)
 y_pred = model.predict(x_test)
 for i in range(len(y_pred)):
     if y_pred[i] < 0.5:

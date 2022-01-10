@@ -3,8 +3,9 @@ import pandas as pd
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 import numpy as np
 from preprocessor import lemmatize,remove_stopwords, get_dataframe_partitions
-from sklearn.metrics import classification_report,accuracy_score
+from sklearn.metrics import classification_report,accuracy_score,RocCurveDisplay,ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
+
 # Loading data
 df = pd.read_csv("merged_df.csv")
 df = df[df['review'].notna()]
@@ -14,9 +15,9 @@ embedding_dim = 64
 max_tokens = 30000
 output_length = 300
 batch_size = 16
-epochs = 10
+epochs = 3
 # 4 epoch
-    
+
 # # Data preprocessing
 # df = lemmatize(df)
 # df = remove_stopwords(df)
@@ -37,8 +38,6 @@ y_test = test_df['voted_up']
 # Text vectorizer
 vectorize_layer = TextVectorization(max_tokens = max_tokens, output_mode = 'int', output_sequence_length=output_length)
 vectorize_layer.adapt(x_train)
-# vocab = vectorize_layer.get_vocabulary()
-# print(vocab[:20])
 
 # Defining model
 def create_model():
@@ -47,10 +46,11 @@ def create_model():
     model.add(tf.keras.layers.Embedding(input_dim = max_tokens+1,output_dim = embedding_dim))
     model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(embedding_dim,return_sequences=True)))
     model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(int(embedding_dim/2))))
+    model.add(tf.keras.layers.Dropout(0.1))
     model.add(tf.keras.layers.Dense(embedding_dim, activation='relu'))
     model.add(tf.keras.layers.Dense(embedding_dim/2, activation='relu'))
-    model.add(tf.keras.layers.Dense(1))
-    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True), optimizer=tf.keras.optimizers.Adam(0.00001), metrics=['accuracy'])
+    model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True), optimizer=tf.keras.optimizers.Adam(0.0001), metrics=['accuracy'])
 
     return model 
 
@@ -62,7 +62,14 @@ for i in range(len(y_pred)):
         y_pred[i] = 0
     else:
         y_pred[i] = 1
+
 print("\nBidirectional LSTM Classification Report")
 print(classification_report(y_test,y_pred))
 accuracy = accuracy_score(y_test,y_pred)
 print("Average accuracy: " + str(accuracy))
+ConfusionMatrixDisplay.from_predictions(y_test,y_pred)
+plt.show()
+
+RocCurveDisplay.from_predictions(y_test,y_pred)
+plt.plot([0, 1], [0, 1], 'k--')
+plt.show()

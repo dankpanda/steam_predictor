@@ -1,6 +1,7 @@
 import pandas as pd
 import os
-# from langdetect import detect
+from langdetect import detect
+from string import punctuation
 # #Initial merge
 # merged_df = pd.DataFrame()
 # csv_list = os.listdir('dataset')
@@ -90,8 +91,8 @@ import os
 #         df.at[i,'review'] = cur
 # df.to_csv('merged_df.csv',index=False)
 
-# Removing non english rows
-#df = pd.read_csv('dataset/merged_df.csv')
+# # Removing non english rows
+# df = pd.read_csv('dataset/merged_df.csv')
 # drop_index=[]
 # for i in df.index:
 #     try:
@@ -105,27 +106,21 @@ import os
 # print(df.shape)
 # df.drop(drop_index,inplace=True)
 # print(df.shape)
+# df.to_csv('merged_df.csv',index=False)
 
-# stop = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', "you're", "you've", "you'll", "you'd", 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', "she's", 'her', 'hers', 'herself', 'it', "it's", 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', "that'll", 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', "don't", 'should', "should've", 'now', 'd', 'll', 'm', 'o', 're', 've', 'y', 'ain', 'aren', "aren't", 'couldn', "couldn't", 'didn', "didn't", 'doesn', "doesn't", 'hadn', "hadn't", 'hasn', "hasn't", 'haven', "haven't", 'isn', "isn't", 'ma', 'mightn', "mightn't", 'mustn', "mustn't", 'needn', "needn't", 'shan', "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't", 'weren', "weren't", 'won', "won't", 'wouldn', "wouldn't"]
+# # Removing punctuations
+# punct = {}
+# for i in punctuation:
+#     punct[ord(i)] = None
 
-# df['review'] = df['review'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop)]))
+# df = pd.read_csv('dataset/merged_df.csv')
+# for i in df.index:
+#     print(i)
+#     df.at[i,'review'] = str(df.at[i,'review']).translate(punct)
 
-# df.to_csv('merged_df2.csv',index=False)
-df= pd.read_csv("merged_df.csv")
-a = df.head(10)
+# df.to_csv('merged_df.csv',index=False)
 
-import spacy
-nlp = spacy.load('en_core_web_sm',disable=['parser','ner'])
-doc = "apparently definitive edition want lazy copy paste original mafia 2 bug size incompetent work hangar 13 dont buy remake"
-
-def space(comment):
-    doc = nlp(comment)
-    return " ".join([token.lemma_ for token in doc])
-
-for i in a.index:
-    review = a.at[i,'review']
-    new_review = space(review)
-    a.at[i,'review'] = new_review 
-    if(review != new_review):
-        print(review)
-        print(new_review)
+df1 = pd.read_csv("https://raw.githubusercontent.com/dankpanda/steam_predictor/678919036e71b0e93402685c88173e567e0d3c00/dataset/merged_df.csv")
+df = pd.read_csv('dataset/merged_df.csv')
+print(df1.shape)
+print(df.shape)

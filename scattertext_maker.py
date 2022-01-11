@@ -1,17 +1,17 @@
 import scattertext as st
-import tensorflow as tf
+#import tensorflow as tf
 import pandas as pd
-from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
+#from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 import numpy as np
-from preprocessor import lemmatize,remove_stopwords, get_dataframe_partitions
-from sklearn.metrics import classification_report,accuracy_score,RocCurveDisplay,ConfusionMatrixDisplay
+#from preprocessor import lemmatize,remove_stopwords, get_dataframe_partitions
+#from sklearn.metrics import classification_report,accuracy_score,RocCurveDisplay,ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
-from sklearn.feature_extraction.text import CountVectorizer, HashingVectorizer, TfidfVectorizer
+#from sklearn.feature_extraction.text import CountVectorizer, HashingVectorizer, TfidfVectorizer
 from IPython.core.display import display, HTML
 from scattertext import CorpusFromPandas, produce_scattertext_explorer
 from IPython.display import IFrame
 
-df = pd.read_csv("dataset/merged_preprocessed.csv")
+df = pd.read_csv("dataset/merged_df.csv")
 df = df[df['review'].notna()]
 
 scatter_data = df[['review', 'voted_up']]
@@ -34,6 +34,6 @@ html = st.produce_scattertext_explorer(corpus,
                                     transform=st.Scalers.percentile,
                                     metadata=scatter_data['category']
                                    )
-file_name = 'assets/Reddit_ScattertextRankDataJitter.html'
+file_name = 'assets/scattertext.html'
 open(file_name, 'wb').write(html.encode('utf-8'))
 IFrame(src=file_name, width = 1200, height=700)

@@ -1,6 +1,7 @@
 import pandas as pd
 import os
-from langdetect import detect
+#from langdetect import detect
+from preprocessor import lemmatize, remove_stopwords
 from string import punctuation
 # #Initial merge
 # merged_df = pd.DataFrame()
@@ -22,14 +23,26 @@ from string import punctuation
 # merged_df.to_csv('dataset/merged_df.csv', index = False)
 # print(merged_df.shape)
 
+# # Converting all text to lower case
+# df = pd.read_csv('dataset/merged_df.csv')
+# for i in df.index:
+#     cur = str(df.at[i,'review'])
+#     cur = cur.lower()
+#     df.at[i,'review'] = cur
+
+# df.to_csv('merged_df.csv',index=False)
+
 # # Removing special characters 1
-# special_charas = ['\n','[i]','[/i]','[b]','[/b]','[spoiler]','[/spoiler]','[h1]','[/h1]','[h2]','[/h2]','[h3]','[/h3]','[u]','[/u]','[strike]','[/strike]','[noparse]','[/noparse]','[hr]','[/hr]','[/url]','[list]','[/list]','[*]','[url]','[table]','[/table]','[tr]','[/tr]','[tc]','[/tc]','[th]','[/th]','[quote]','[/quote]','[td]','[/td]']
+# special_charas = ['\n','[i]','[/i]','[b]','[/b]','[spoiler]','[/spoiler]','[h1]','[/h1]','[h2]','[/h2]','[h3]','[/h3]','[u]','[/u]','[strike]','[/strike]','[noparse]','[/noparse]','[hr]','[/hr]','[/url]','[list]','[/list]','[*]','[url]','[table]','[/table]','[tr]','[/tr]','[tc]','[/tc]','[th]','[/th]','[quote]','[/quote]','[td]','[/td]','[code]','[/code]']
 # df = pd.read_csv('dataset/merged_df.csv')
 
 # counter = 0
 # for i in df.index:
 #     cur = str(df.at[i,'review'])
 #     for j in special_charas:
+#         if(j == special_charas[0]):
+#             cur = cur.replace(str(j),' ')
+#             cur=cur.replace(str(j.upper()),' ')
 #         cur=cur.replace(str(j),'')
 #         cur = cur.replace(str(j.upper()),'')
 #     df.at[i,'review'] = cur 
@@ -44,7 +57,6 @@ from string import punctuation
 #     review = str(df.at[i,'review'])
 #     temp = review.split('[url=')
 #     if(len(temp) > 1):
-        
 #         cur = ""
 #         for j in temp: 
 #             if j == temp[0]:
@@ -60,6 +72,19 @@ from string import punctuation
 
 # df.to_csv('merged_df.csv',index = False)
 
+# # Remove other urls
+# df = pd.read_csv('dataset/merged_df.csv')
+# for i in df.index:
+#     print(i)
+#     res = ""
+#     for j in str(df.at[i,'review']).split():
+#         if j[:4] != "http":
+#             res += j 
+#             res += " "
+#     df.at[i,'review'] = res
+
+# df.to_csv('merged_df.csv',index=False)
+
 # # Converting TRUE and FALSE to 0 and 1
 # df = pd.read_csv('dataset/merged_df.csv')
 # df['voted_up'] = df['voted_up'].astype("string")
@@ -71,14 +96,6 @@ from string import punctuation
 # df['voted_up'] = df['voted_up'].astype(int)
 # df.to_csv('merged_df.csv',index=False)
 
-# # Converting all text to lower case
-# df = pd.read_csv('dataset/merged_df.csv')
-# for i in df.index:
-#     cur = str(df.at[i,'review'])
-#     cur = cur.lower()
-#     df.at[i,'review'] = cur
-
-# df.to_csv('merged_df.csv',index=False)
 
 # # Removing non ascii characters
 # df = pd.read_csv('dataset/merged_df.csv')
@@ -108,19 +125,31 @@ from string import punctuation
 # print(df.shape)
 # df.to_csv('merged_df.csv',index=False)
 
-# # Removing punctuations
+# #Removing stopwords
+# df = pd.read_csv('dataset/merged_df.csv')
+# df = remove_stopwords(df)
+# df.to_csv('merged_df.csv',index=False)
+
+# # Lemmatization 
+# df = pd.read_csv('dataset/merged_df.csv')
+# df = lemmatize(df)
+# df.to_csv('merged_df.csv',index=False)
+
+
+
+# Removing punctuations
 # punct = {}
 # for i in punctuation:
-#     punct[ord(i)] = None
+#   if i == "'":
+#       punct[ord(i)] = None
+#   else:
+#       punct[ord(i)] = 32
 
 # df = pd.read_csv('dataset/merged_df.csv')
 # for i in df.index:
 #     print(i)
-#     df.at[i,'review'] = str(df.at[i,'review']).translate(punct)
+#     temp = str(df.at[i,'review']).translate(punct).split() 
+#     df.at[i,'review'] = " ".join(temp)
 
 # df.to_csv('merged_df.csv',index=False)
 
-df1 = pd.read_csv("https://raw.githubusercontent.com/dankpanda/steam_predictor/678919036e71b0e93402685c88173e567e0d3c00/dataset/merged_df.csv")
-df = pd.read_csv('dataset/merged_df.csv')
-print(df1.shape)
-print(df.shape)

@@ -2,7 +2,7 @@ import tensorflow as tf
 import pandas as pd
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 import numpy as np
-from preprocessor import lemmatize,remove_stopwords, get_dataframe_partitions
+from preprocessor import get_dataframe_partitions
 from sklearn.metrics import classification_report,accuracy_score,RocCurveDisplay,ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 
@@ -17,13 +17,6 @@ output_length = 300
 batch_size = 16
 epochs = 3
 # 4 epoch
-
-# # Data preprocessing
-# df = lemmatize(df)
-# df = remove_stopwords(df)
-
-df = pd.read_csv("merged_preprocessed.csv")
-df = df[df['review'].notna()]
 
 # Splitting dataset
 train_df, val_df, test_df = get_dataframe_partitions(df,0.7,0.15,0.15)

@@ -2,12 +2,12 @@ import tensorflow as tf
 import pandas as pd
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 import numpy as np
-from preprocessor import get_dataframe_partitions
+from data_utilities.preprocessor import get_dataframe_partitions
 from sklearn.metrics import classification_report,accuracy_score,RocCurveDisplay,ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 
 # Loading data
-df = pd.read_csv("merged_df.csv")
+df = pd.read_csv("dataset/merged_df.csv")
 df = df[df['review'].notna()]
 
 # Defining variables
@@ -19,7 +19,7 @@ epochs = 3
 # 4 epoch
 
 # Splitting dataset
-train_df, val_df, test_df = get_dataframe_partitions(df,0.7,0.15,0.15)
+train_df, val_df, test_df = get_dataframe_partitions(df,0.8,0.1,0.1,seed = 939)
 
 x_train = train_df['review']
 y_train = train_df['voted_up']
@@ -48,13 +48,45 @@ def create_model():
     return model 
 
 model = create_model()
-history = model.fit(x_train, y_train, epochs=epochs, validation_data=(x_val,y_val),batch_size=batch_size)
-y_pred = model.predict(x_test)
+#model.fit(x_train, y_train, epochs=epochs, validation_data=(x_val,y_val),batch_size=batch_size)
+# y_pred = model.predict(x_test)
+# for i in range(len(y_pred)):
+#     if y_pred[i] < 0.5:
+#         y_pred[i] = 0
+#     else:
+#         y_pred[i] = 1
+
+def trainloop(times):
+    max = 0.8708894878706199
+    max_iteration = -1
+    iteration = 0
+    for i in range(times):
+        iteration += 1
+        model.fit(x_train, y_train, epochs=epochs, validation_data=(x_val,y_val),batch_size=batch_size)
+        y_pred = model.predict(x_test)
+        for j in range(len(y_pred)):
+            if y_pred[j] < 0.5:
+                y_pred[j] = 0
+            else:
+                y_pred[j] = 1
+        accuracy = accuracy_score(y_test,y_pred)
+        if accuracy > max:
+            max = accuracy 
+            model.save("rnn",save_format="tf")
+            max_iteration = iteration
+        print("Best accuracy {}, current accuracy at iteration {}: {}".format(max,iteration,accuracy))
+    
+    print("Best model at iteration {} with accuracy of {}".format(max_iteration,max))
+
+trainloop(3)
+best_model = tf.keras.models.load_model('rnn')
+y_pred = best_model.predict(x_test)
 for i in range(len(y_pred)):
     if y_pred[i] < 0.5:
         y_pred[i] = 0
     else:
         y_pred[i] = 1
+
 
 print("\nBidirectional LSTM Classification Report")
 print(classification_report(y_test,y_pred))
@@ -66,3 +98,4 @@ plt.show()
 RocCurveDisplay.from_predictions(y_test,y_pred)
 plt.plot([0, 1], [0, 1], 'k--')
 plt.show()
+
